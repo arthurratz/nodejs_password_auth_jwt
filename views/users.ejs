@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>A Node.js Web Application Security Using Passport, Sessions and MySQL</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <!-- Angular.js core JavaScript -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+  <!-- Bootstrap core CSS -->
+  <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
+  <!-- Material Design Bootstrap -->
+  <link href="stylesheets/mdb.min.css" rel="stylesheet">
+  <!-- Your custom styles (optional) -->
+  <link href="stylesheets/style.css" rel="stylesheet">
+</head>
+
+<body>
+  <script type="text/javascript">
+    var app = angular.module('AuthApp', []);
+        app.controller('UsersCtrl', function($scope) {
+            $scope.fullname = ""; $scope.username = ""; $scope.passwd = "";
+            $.post('/users', (response) => {
+                $scope.$apply(function () {
+                  $scope.auth_user = response["auth_user"];
+                  $scope.users = JSON.parse(response["users"]);
+                });
+            });
+
+            $scope.addUser = function () {
+              $.post('/adduser',  { "username": $scope.username, 
+                "passwd": $scope.passwd, "fullname": $scope.fullname }, 
+                  (response) => { $(location).attr('href', "/users"); });
+            }
+
+            $scope.deleteUser = function (login) {
+              $.post('/deleteuser',  { "username": login }, 
+                  (response) => { $(location).attr('href', "/users"); });
+            }
+
+            $scope.signOut = function () {
+              $.post('/logout', (response) => { $(location).attr('href', "/"); });
+            }
+    });
+  </script>
+  <!-- Start your project here-->
+  <div style="height: 100vh" ng-app="AuthApp" ng-controller="UsersCtrl">
+    <div class="container pt-4">
+    <div class="col mb-5">
+      <div class="card">
+        <div class="card-body">
+            <!--Navbar-->
+            <nav class="navbar navbar-expand-lg navbar-dark primary-color">
+
+                <!-- Navbar brand -->
+                <a class="navbar-brand" href="#" ng-model="auth_user">{{ auth_user }}</a>
+  
+                <!-- Collapse button -->
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+                    aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="my-0 my-2 my-lg-0">
+                  <button class="btn btn-outline-white btn-md my-2 my-sm-0 ml-3"
+                  data-toggle="modal" data-target="#addUserModal">New User...</button>
+                </div>
+
+                <div class="md-form my-0 my-2 my-lg-0 ml-auto">
+                    <button class="btn btn-outline-white btn-md my-2 my-sm-0 ml-3" ng-click="signOut();">Signout</button>
+                </div>
+            <!-- Collapsible content -->
+            </nav>
+        <!--/.Navbar-->
+        <div class="col pt-4">
+        <table class="table">
+            <thead class="black white-text">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Login</th>
+                <th scope="col">Password</th>
+                <th scope="col">Name</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="user in users">
+                <th scope="row">{{$index + 1}}</th>
+                <td>{{ user.login }}</td>
+                <td>{{ user.password }}</td>
+                <td>{{ user.name }}</td>
+                <td style="width: 200px;" ng-if="user.is_admin == 0 && user.name != auth_user">
+                  <button class="button" ng-click="deleteUser(user.login);">Remove</button>
+                </td>
+              </tr>
+            </tbody>
+         </table>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="New User..."
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">New User...</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <!-- Full User Name -->
+                <input type="name" id="defaultLoginFormFullName" ng-model="fullname" class="form-control mb-4" placeholder="Full User Name">
+                <!-- Email -->
+                <input type="login" id="defaultLoginFormLogin" ng-model="username" class="form-control mb-4" placeholder="Login">
+                <!-- Password -->
+                <input type="password" id="defaultLoginFormPassword" ng-model="passwd" class="form-control mb-4" placeholder="Password">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="addUser();">Save changes</button>
+              </div>
+            </div>
+            </div>
+          </div>        
+       </div>
+     </div>
+   </div>
+  </div>
+  </div>
+  <!-- SCRIPTS -->
+  <!-- JQuery -->
+  <script type="text/javascript" src="javascripts/jquery.min.js"></script>
+  <!-- Bootstrap tooltips -->
+  <script type="text/javascript" src="javascripts/popper.min.js"></script>
+  <!-- Bootstrap core JavaScript -->
+  <script type="text/javascript" src="javascripts/bootstrap.min.js"></script>
+  <!-- MDB core JavaScript -->
+  <script type="text/javascript" src="javascripts/mdb.min.js"></script>
+</body>
+
+</html>

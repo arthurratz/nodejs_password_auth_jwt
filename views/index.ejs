@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>A Node.js Web Application Security Using Passport, Sessions and MySQL</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+  <!-- Angular.js core JavaScript -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+  <!-- Bootstrap core CSS -->
+  <link href="stylesheets/bootstrap.min.css" rel="stylesheet">
+  <!-- Material Design Bootstrap -->
+  <link href="stylesheets/mdb.min.css" rel="stylesheet">
+  <!-- Your custom styles (optional) -->
+  <link href="stylesheets/style.css" rel="stylesheet">
+</head>
+
+<body>
+  <script src="javascripts/client.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var app = angular.module('AuthApp', []);
+    app.controller('AuthCtrl', function($scope) {
+      $scope.username = ""; $scope.password = "";
+      $scope.auth_msg = "Default: login: `admin` password: `admin`";
+      $scope.signIn = () => {  
+        AJAXRequestWithTokenBearer('/login', $scope.username, 
+          $scope.password, (token, response) => {
+            if (response != false) { 
+              $.post('/logon', { "Authorization": "Bearer " + token }, (response) => { 
+                $(location).attr('href', "/users"); 
+              });
+            }
+            else { $scope.$apply(function () { 
+              $scope.auth_msg = "Incorrect Username Or Password!!!"; }); 
+            }
+          });
+      };
+    });
+  </script>
+  <!-- Start your project here-->
+  <div style="height: 100vh" ng-app="AuthApp" ng-controller="AuthCtrl">
+    <div class="flex-center flex-column">
+      <div class="card">
+        <div class="card-body">
+          <p class="h4 mb-4">Sign in</p>
+          <!-- Email -->
+          <input type="login" id="defaultLoginFormLogin" ng-model="username" class="form-control mb-4" placeholder="Login">
+          <!-- Password -->
+          <input type="password" id="defaultLoginFormPassword" ng-model="password" class="form-control mb-4" placeholder="Password">
+          <p class="text-danger text-center h6 mb-6" style="font-size: 10px;" ng-model="auth_msg">{{ auth_msg }}</p><br>
+          <div class="d-flex justify-content-around">
+         </div>
+         <!-- Sign in button -->
+         <button class="btn btn-info btn-block my-4" ng-click="signIn()">Sign in</button>
+      </div>
+    </div>
+  </div>
+  <!-- SCRIPTS -->
+  <!-- JQuery -->
+  <script type="text/javascript" src="javascripts/jquery.min.js"></script>
+  <!-- Bootstrap tooltips -->
+  <script type="text/javascript" src="javascripts/popper.min.js"></script>
+  <!-- Bootstrap core JavaScript -->
+  <script type="text/javascript" src="javascripts/bootstrap.min.js"></script>
+  <!-- MDB core JavaScript -->
+  <script type="text/javascript" src="javascripts/mdb.min.js"></script>
+</body>
+
+</html>
